@@ -8,6 +8,19 @@
 !.yarn/releases
 !.yarn/versions
 
+# Python virtualenv, cache & database
+venv/
+.venv/
+backend/venv/
+backend/chroma_db/
+backend/uploads/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
 # testing
 /coverage
 
@@ -28,9 +41,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

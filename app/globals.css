@@ -119,11 +119,114 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
-    @apply bg-background text-foreground;
-    }
+    @apply bg-background text-slate-900;
+  }
   html {
     @apply font-sans;
-    }
+  }
+}
+
+.bg-white {
+  color: #0f172a;
+}
+
+
+/* ── Claymorphism Utilities ── */
+
+.clay {
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 50%);
+  box-shadow:
+    /* outer depth */
+    8px 8px 20px rgba(0, 0, 0, 0.12),
+    -4px -4px 12px rgba(255, 255, 255, 0.7),
+    /* inner highlight – the "puffy" effect */
+    inset 2px 2px 6px rgba(255, 255, 255, 0.6),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.clay:hover {
+  box-shadow:
+    10px 10px 24px rgba(0, 0, 0, 0.16),
+    -5px -5px 14px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 8px rgba(255, 255, 255, 0.7),
+    inset -2px -2px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.clay:active {
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.1),
+    -2px -2px 8px rgba(255, 255, 255, 0.6),
+    inset 3px 3px 8px rgba(0, 0, 0, 0.1),
+    inset -1px -1px 4px rgba(255, 255, 255, 0.4);
+  transform: translateY(0px);
+}
+
+/* Primary clay button – indigo */
+.clay-primary {
+  border: none;
+  border-radius: 9999px;
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+  box-shadow:
+    6px 6px 16px rgba(79, 70, 229, 0.35),
+    -4px -4px 12px rgba(129, 140, 248, 0.25),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.clay-primary:hover {
+  background: linear-gradient(145deg, #7c7ef7, #5b54ec);
+  box-shadow:
+    8px 8px 22px rgba(79, 70, 229, 0.45),
+    -5px -5px 14px rgba(129, 140, 248, 0.3),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.3),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+}
+
+.clay-primary:active {
+  box-shadow:
+    3px 3px 8px rgba(79, 70, 229, 0.3),
+    -2px -2px 6px rgba(129, 140, 248, 0.2),
+    inset 3px 3px 6px rgba(0, 0, 0, 0.15),
+    inset -1px -1px 3px rgba(255, 255, 255, 0.15);
+  transform: translateY(0px);
+}
+
+/* Outline/glass clay button */
+.clay-outline {
+  border: none;
+  border-radius: 9999px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.85), rgba(241,245,249,0.75));
+  box-shadow:
+    6px 6px 16px rgba(0, 0, 0, 0.08),
+    -4px -4px 12px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.clay-outline:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(241,245,249,0.85));
+  box-shadow:
+    8px 8px 22px rgba(0, 0, 0, 0.12),
+    -5px -5px 14px rgba(255, 255, 255, 1),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.06);
+  transform: translateY(-3px);
+}
+
+.clay-outline:active {
+  box-shadow:
+    3px 3px 8px rgba(0, 0, 0, 0.06),
+    -2px -2px 6px rgba(255, 255, 255, 0.7),
+    inset 3px 3px 6px rgba(0, 0, 0, 0.06),
+    inset -1px -1px 3px rgba(255, 255, 255, 0.5);
+  transform: translateY(0px);
 }
