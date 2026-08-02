@@ -10,7 +10,6 @@ import {
   Brain,
   ClipboardCheck,
   Network,
-  CalendarDays,
   User,
   Settings,
   LogOut,
@@ -53,11 +52,6 @@ const menu = [
     title: "Mind Maps",
     href: "/dashboard/mindmaps",
     icon: Network,
-  },
-  {
-    title: "Planner",
-    href: "/dashboard/planner",
-    icon: CalendarDays,
   },
 ];
 
