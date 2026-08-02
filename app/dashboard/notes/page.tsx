@@ -28,12 +28,12 @@ interface Note {
   id: number;
   user_id: number;
   document_id?: number | null;
-  title: str;
-  content: str;
-  category: str;
-  tags: str;
-  created_at: str;
-  updated_at: str;
+  title: string;
+  content: string;
+  category: string;
+  tags: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function NotesPage() {
