@@ -23,11 +23,11 @@ async function request<T>(
 
   const token = getToken();
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     ...(fetchOptions.body
       ? { "Content-Type": "application/json" }
       : {}),
-    ...fetchOptions.headers,
+    ...(fetchOptions.headers as Record<string, string>),
   };
 
   if (token) {
@@ -112,7 +112,7 @@ export const api = {
 
   upload: async <T>(endpoint: string, formData: FormData): Promise<T> => {
     const token = getToken();
-    const headers: HeadersInit = {};
+    const headers: Record<string, string> = {};
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
