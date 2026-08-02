@@ -93,41 +93,6 @@ export default function SettingsPage() {
       </div>
 
       <form onSubmit={handleSaveSettings} className="space-y-6">
-        {/* Appearance Theme */}
-        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Sun className="text-indigo-600" size={18} />
-            <span>Appearance & Theme</span>
-          </h2>
-          <p className="text-xs text-slate-500">
-            Choose your preferred display interface theme for StudySphere.
-          </p>
-
-          <div className="grid grid-cols-3 gap-4 pt-2">
-            {[
-              { id: "light", label: "Light", icon: Sun },
-              { id: "dark", label: "Dark", icon: Moon },
-              { id: "system", label: "System", icon: Laptop },
-            ].map((theme) => {
-              const IconComp = theme.icon;
-              const isSelected = selectedTheme === theme.id;
-              return (
-                <div
-                  key={theme.id}
-                  onClick={() => setSelectedTheme(theme.id)}
-                  className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition cursor-pointer ${
-                    isSelected
-                      ? "border-indigo-600 bg-indigo-50/50 text-indigo-900 font-bold"
-                      : "border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300"
-                  }`}
-                >
-                  <IconComp size={24} className={isSelected ? "text-indigo-600" : "text-slate-400"} />
-                  <span className="text-xs mt-2">{theme.label}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
         {/* AI Model Configuration */}
         <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
