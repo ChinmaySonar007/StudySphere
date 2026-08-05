@@ -156,26 +156,19 @@ export default function Navbar() {
 
           <div className="hidden lg:flex items-center gap-3">
 
-            <Button
-              variant="ghost"
-              className="
-              rounded-full
-
-              text-slate-700
-              font-medium
-
-              hover:bg-slate-100
-              hover:text-slate-900
-              "
+            <Link
+              href="/login"
+              className="inline-flex h-9 items-center justify-center rounded-full px-5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition"
             >
-              <Link href="/login">Login</Link>
-            </Button>
+              Login
+            </Link>
 
-            <Button
-              className="clay-primary px-7 text-white"
+            <Link
+              href="/signup"
+              className="inline-flex h-9 items-center justify-center rounded-xl clay-primary px-7 text-sm font-medium text-white shadow transition"
             >
               Get Started
-            </Button>
+            </Link>
 
           </div>
 
@@ -186,6 +179,7 @@ export default function Navbar() {
               scale: 0.9,
             }}
             onClick={() => setOpen(!open)}
+            aria-label="Toggle Menu"
             className="
             rounded-xl
 
@@ -202,9 +196,9 @@ export default function Navbar() {
             "
           >
             {open ? (
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 text-slate-800" />
             ) : (
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5 text-slate-800" />
             )}
           </motion.button>
 
@@ -246,18 +240,20 @@ export default function Navbar() {
             rounded-2xl
 
             border
-            border-white/10
+            border-slate-200/50
 
-            bg-black/40
+            bg-slate-900/90
 
             backdrop-blur-3xl
 
             p-6
 
+            shadow-2xl
+
             lg:hidden
             "
           >
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
 
               {navLinks.map((item) => (
                 <Link
@@ -265,26 +261,37 @@ export default function Navbar() {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className="
-                  text-slate-300
+                  text-slate-200
                   transition
                   hover:text-white
+                  font-medium
+                  py-2
+                  px-3
+                  rounded-xl
+                  hover:bg-white/10
                   "
                 >
                   {item.name}
                 </Link>
               ))}
 
-              <Button
-                variant="ghost"
+              <div className="h-px w-full bg-white/10 my-1" />
+
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center justify-center h-11 text-slate-100 hover:text-white bg-white/10 hover:bg-white/20 text-base font-medium rounded-xl transition"
               >
                 Login
-              </Button>
+              </Link>
 
-              <Button
-                className="clay-primary text-white"
+              <Link
+                href="/signup"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center justify-center h-11 clay-primary text-white text-base font-medium rounded-xl shadow transition"
               >
                 Get Started
-              </Button>
+              </Link>
 
             </div>
           </motion.div>

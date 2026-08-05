@@ -128,11 +128,11 @@ export default function LoginCard() {
   };
 
   return (
-    <section className="flex w-full items-center justify-center p-8 lg:w-[500px]">
+    <section className="flex w-full items-center justify-center p-4 sm:p-8 lg:w-[500px]">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full rounded-3xl border border-white/10 bg-white/5 p-10 backdrop-blur-3xl"
+        className="w-full rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-10 backdrop-blur-3xl"
       >
         <h2 className="text-4xl font-bold">
           Welcome Back
@@ -142,11 +142,18 @@ export default function LoginCard() {
           Sign in to continue your learning.
         </p>
 
-        <div className="mt-10 space-y-5">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+          className="mt-10 space-y-5"
+        >
           <Input
             type="email"
             placeholder="Email"
-            className="h-12 bg-white/5"
+            autoComplete="email"
+            className="h-12 bg-white/5 text-base"
             value={email}
             onChange={(e) =>
               setEmail(e.target.value)
@@ -156,7 +163,8 @@ export default function LoginCard() {
           <Input
             type="password"
             placeholder="Password"
-            className="h-12 bg-white/5"
+            autoComplete="current-password"
+            className="h-12 bg-white/5 text-base"
             value={password}
             onChange={(e) =>
               setPassword(e.target.value)
@@ -164,12 +172,12 @@ export default function LoginCard() {
           />
 
           <div className="flex justify-between text-sm">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" />
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" className="rounded" />
               Remember me
             </label>
 
-            <Link href="/forgot-password">
+            <Link href="/forgot-password" className="hover:underline">
               Forgot password?
             </Link>
           </div>
@@ -181,22 +189,14 @@ export default function LoginCard() {
           )}
 
           <Button
-            onClick={handleLogin}
+            type="submit"
             disabled={loading}
-            className="h-12 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500"
+            className="h-12 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 font-semibold text-base shadow-lg active:scale-[0.98] transition"
           >
             {loading
               ? "Signing In..."
               : "Login"}
           </Button>
-
-          <div className="flex items-center gap-4">
-            <div className="h-px flex-1 bg-white/10" />
-
-            <span className="text-sm">
-              OR
-            </span>
-
             <div className="h-px flex-1 bg-white/10" />
           </div>
 

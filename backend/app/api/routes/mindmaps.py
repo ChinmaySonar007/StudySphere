@@ -19,6 +19,7 @@ from app.crud.mindmap import (
     update_mindmap,
     delete_mindmap,
 )
+from app.crud.document import get_document
 from app.services.rag_service import query_rag_pipeline
 
 router = APIRouter(
@@ -88,17 +89,35 @@ def generate_mindmap_ai(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
+    doc_title = "Study Concept"
+    if payload.document_id:
+        doc_obj = get_document(db, payload.document_id)
+        if doc_obj:
+            doc_title = doc_obj.original_filename.rsplit('.', 1)[0]
+
+    topic_name = payload.topic or payload.title or doc_title
+
     prompt = (
-        "Analyze the document context and outline a hierarchical mindmap structure.\n"
-        "Identify the Central Topic, 3-4 Main Category Branches, and 2-3 Sub-topics for each category.\n"
-        "Format as Markdown bullet lists:\n"
-        "- Central Topic Name\n"
-        "  - Branch Category 1\n"
-        "    - Subtopic 1.1\n"
-        "    - Subtopic 1.2\n"
-        "  - Branch Category 2\n"
-        "    - Subtopic 2.1\n"
-        "    - Subtopic 2.2\n"
+        f"Analyze the study material for '{topic_name}' and construct a hierarchical Mindmap structure.\n"
+        "Return ONLY a raw valid JSON object with NO extra code blocks or explanatory markdown.\n"
+        "JSON Schema:\n"
+        "{\n"
+        "  \"central_topic\": \"Central Subject Title\",\n"
+        "  \"branches\": [\n"
+        "    {\n"
+        "      \"name\": \"Main Category 1\",\n"
+        "      \"subtopics\": [\"Key Concept 1.1\", \"Key Concept 1.2\", \"Key Concept 1.3\"]\n"
+        "    },\n"
+        "    {\n"
+        "      \"name\": \"Main Category 2\",\n"
+        "      \"subtopics\": [\"Key Concept 2.1\", \"Key Concept 2.2\", \"Key Concept 2.3\"]\n"
+        "    },\n"
+        "    {\n"
+        "      \"name\": \"Main Category 3\",\n"
+        "      \"subtopics\": [\"Key Concept 3.1\", \"Key Concept 3.2\", \"Key Concept 3.3\"]\n"
+        "    }\n"
+        "  ]\n"
+        "}\n"
     )
 
     rag_result = query_rag_pipeline(
@@ -110,102 +129,146 @@ def generate_mindmap_ai(
     )
 
     answer_text = rag_result.get("answer", "")
+    
+    # Clean JSON output
+    cleaned_json = answer_text.strip()
+    if "```" in cleaned_json:
+        cleaned_json = re.sub(r'^```(?:json)?\s*', '', cleaned_json)
+        cleaned_json = re.sub(r'\s*```$', '', cleaned_json)
 
-    # Parse bullet structure into node/edge graph JSON compatible with ReactFlow
+    json_data = None
+    try:
+        json_match = re.search(r'\{.*\}', cleaned_json, re.DOTALL)
+        if json_match:
+            json_data = json.loads(json_match.group(0))
+    except Exception as err:
+        print(f"JSON parsing error for mindmap: {err}")
+
+    # Default fallback data if parsing fails
+    if not json_data or "branches" not in json_data:
+        json_data = {
+            "central_topic": topic_name,
+            "branches": [
+                {
+                    "name": "Core Principles",
+                    "subtopics": ["Fundamental Definitions", "Primary Functions", "Key Frameworks"]
+                },
+                {
+                    "name": "Key Mechanisms",
+                    "subtopics": ["Operational Steps", "Sequential Process", "System Interactions"]
+                },
+                {
+                    "name": "Practical Applications",
+                    "subtopics": ["Real-world Use Cases", "Case Studies", "Future Developments"]
+                }
+            ]
+        }
+
+    central_label = json_data.get("central_topic") or topic_name
+    branches = json_data.get("branches", [])
+
     nodes = []
     edges = []
 
-    root_id = "1"
-    root_label = payload.title or "Core Concepts"
-    
-    # Try to extract central topic title
-    lines = [l for l in answer_text.split('\n') if l.strip()]
-    if lines:
-        first_line = re.sub(r'^[#\-\*\d\.\s]+', '', lines[0]).strip()
-        if first_line:
-            root_label = first_line[:40]
+    root_id = "root"
+    num_branches = max(1, len(branches))
+    center_x = ((num_branches - 1) * 280) / 2
 
+    # Root Node
     nodes.append({
         "id": root_id,
-        "data": {"label": root_label},
-        "position": {"x": 250, "y": 50},
+        "data": {"label": central_label},
+        "position": {"x": center_x, "y": 40},
         "type": "input",
-        "style": {"background": "#6366f1", "color": "#ffffff", "fontWeight": "bold", "borderRadius": "12px", "padding": "12px 24px"}
+        "style": {
+            "background": "linear-gradient(135deg, #4f46e5, #7c3aed)",
+            "color": "#ffffff",
+            "fontWeight": "800",
+            "fontSize": "16px",
+            "borderRadius": "16px",
+            "padding": "14px 28px",
+            "boxShadow": "0 10px 25px -5px rgba(79, 70, 229, 0.4)",
+            "border": "none"
+        }
     })
 
-    branches = []
-    current_branch = None
+    colors = [
+        {"bg": "#ec4899", "border": "#db2777"},
+        {"bg": "#8b5cf6", "border": "#7c3aed"},
+        {"bg": "#06b6d4", "border": "#0891b2"},
+        {"bg": "#10b981", "border": "#059669"},
+        {"bg": "#f59e0b", "border": "#d97706"},
+    ]
 
-    for line in lines[1:]:
-        stripped = line.strip()
-        indent_level = len(line) - len(line.lstrip())
-        clean_text = re.sub(r'^[#\-\*\d\.\s]+', '', stripped).strip()
-        if not clean_text:
-            continue
-
-        if indent_level <= 2:
-            current_branch = {"title": clean_text[:35], "subtopics": []}
-            branches.append(current_branch)
-        elif current_branch and indent_level > 2:
-            current_branch["subtopics"].append(clean_text[:35])
-
-    if not branches:
-        branches = [
-            {"title": "Key Definitions", "subtopics": ["Core terms", "Primary principles"]},
-            {"title": "Main Processes", "subtopics": ["Sequential steps", "Functional flow"]},
-            {"title": "Applications", "subtopics": ["Practical usage", "Case examples"]}
-        ]
-
-    colors = ["#ec4899", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b"]
-
-    node_count = 2
-    x_gap = 260
-    start_x = 50
+    node_counter = 1
 
     for idx, branch in enumerate(branches[:5]):
-        branch_id = str(node_count)
-        node_count += 1
-        color = colors[idx % len(colors)]
-        
-        branch_x = start_x + (idx * x_gap)
+        branch_id = f"b_{node_counter}"
+        node_counter += 1
+
+        color_palette = colors[idx % len(colors)]
+        branch_x = idx * 280
         branch_y = 200
 
         nodes.append({
             "id": branch_id,
-            "data": {"label": branch["title"]},
+            "data": {"label": branch.get("name", f"Category {idx+1}")},
             "position": {"x": branch_x, "y": branch_y},
-            "style": {"background": color, "color": "#ffffff", "fontWeight": "600", "borderRadius": "10px", "padding": "10px 18px"}
-        })
-        edges.append({
-            "id": f"e{root_id}-{branch_id}",
-            "source": root_id,
-            "target": branch_id,
-            "animated": True,
-            "style": {"stroke": color, "strokeWidth": 2}
+            "style": {
+                "background": color_palette["bg"],
+                "color": "#ffffff",
+                "fontWeight": "700",
+                "fontSize": "14px",
+                "borderRadius": "12px",
+                "padding": "10px 20px",
+                "boxShadow": "0 6px 15px -3px rgba(0, 0, 0, 0.1)",
+                "border": "none"
+            }
         })
 
-        for sub_idx, sub in enumerate(branch["subtopics"][:3]):
-            sub_id = str(node_count)
-            node_count += 1
-            sub_y = branch_y + 110 + (sub_idx * 70)
+        edges.append({
+            "id": f"e_{root_id}-{branch_id}",
+            "source": root_id,
+            "target": branch_id,
+            "type": "smoothstep",
+            "animated": True,
+            "style": {"stroke": color_palette["bg"], "strokeWidth": 3}
+        })
+
+        subtopics = branch.get("subtopics", [])
+        for sub_idx, sub in enumerate(subtopics[:4]):
+            sub_id = f"s_{node_counter}"
+            node_counter += 1
+            sub_y = branch_y + 110 + (sub_idx * 75)
 
             nodes.append({
                 "id": sub_id,
                 "data": {"label": sub},
                 "position": {"x": branch_x, "y": sub_y},
-                "style": {"background": "#ffffff", "color": "#1e293b", "border": f"2px solid {color}", "borderRadius": "8px", "padding": "8px 14px", "fontSize": "13px"}
+                "style": {
+                    "background": "#ffffff",
+                    "color": "#0f172a",
+                    "fontWeight": "600",
+                    "fontSize": "12px",
+                    "borderRadius": "10px",
+                    "padding": "8px 16px",
+                    "border": f"2px solid {color_palette['border']}",
+                    "boxShadow": "0 2px 8px rgba(0, 0, 0, 0.05)"
+                }
             })
+
             edges.append({
-                "id": f"e{branch_id}-{sub_id}",
+                "id": f"e_{branch_id}-{sub_id}",
                 "source": branch_id,
                 "target": sub_id,
-                "style": {"stroke": color, "strokeDasharray": "4"}
+                "type": "smoothstep",
+                "style": {"stroke": color_palette["border"], "strokeDasharray": "4", "strokeWidth": 2}
             })
 
     graph_data = json.dumps({"nodes": nodes, "edges": edges})
 
     mindmap_in = MindmapCreate(
-        title=root_label,
+        title=central_label,
         nodes_json=graph_data,
         document_id=payload.document_id,
     )

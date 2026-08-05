@@ -159,7 +159,7 @@ export default function SignupCard() {
 
 
   return (
-    <section className="flex w-full items-center justify-center lg:w-[460px]">
+    <section className="flex w-full items-center justify-center p-4 sm:p-8 lg:w-[460px]">
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
@@ -170,7 +170,8 @@ export default function SignupCard() {
           border
           border-white/60
           bg-white/70
-          p-10
+          p-6
+          sm:p-10
           shadow-2xl
           backdrop-blur-2xl
         "

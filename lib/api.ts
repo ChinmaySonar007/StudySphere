@@ -48,6 +48,13 @@ async function request<T>(
         error.detail || error.message || errorMessage;
     } catch {}
 
+    if (response.status === 401 && typeof window !== "undefined") {
+      removeToken();
+      if (window.location.pathname.startsWith("/dashboard")) {
+        window.location.href = "/login";
+      }
+    }
+
     throw new Error(errorMessage);
   }
 
@@ -129,6 +136,14 @@ export const api = {
         const error = await response.json();
         errorMessage = error.detail || error.message || errorMessage;
       } catch {}
+
+      if (response.status === 401 && typeof window !== "undefined") {
+        removeToken();
+        if (window.location.pathname.startsWith("/dashboard")) {
+          window.location.href = "/login";
+        }
+      }
+
       throw new Error(errorMessage);
     }
 

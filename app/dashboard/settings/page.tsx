@@ -21,7 +21,7 @@ interface UserProfile {
   id: number;
   full_name: string;
   email: string;
-  theme_preference: string;
+  theme_preference?: string;
 }
 
 export default function SettingsPage() {
@@ -38,13 +38,16 @@ export default function SettingsPage() {
   }, []);
 
   async function fetchUserSettings() {
+    if (!getToken()) return;
     try {
       setLoading(true);
       const res = await api.get<UserProfile>("/users/me");
       setUser(res);
       setSelectedTheme(res.theme_preference || "system");
-    } catch (err) {
-      console.error("Failed to load settings:", err);
+    } catch (err: any) {
+      if (err?.message !== "Not authenticated") {
+        console.error("Failed to load settings:", err);
+      }
     } finally {
       setLoading(false);
     }

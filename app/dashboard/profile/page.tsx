@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
+import { getToken } from "@/lib/auth";
 import {
   User as UserIcon,
   Mail,
@@ -63,6 +64,7 @@ export default function ProfilePage() {
   }, []);
 
   async function fetchProfileData() {
+    if (!getToken()) return;
     try {
       setLoading(true);
       const [userRes, statsRes] = await Promise.all([
@@ -77,8 +79,10 @@ export default function ProfilePage() {
       setBio(userRes.bio || "");
       setStudyGoal(userRes.study_goal || "Master your subjects with AI");
       setAvatarUrl(userRes.avatar_url || AVATAR_OPTIONS[0]);
-    } catch (err) {
-      console.error("Failed to load profile:", err);
+    } catch (err: any) {
+      if (err?.message !== "Not authenticated") {
+        console.error("Failed to load profile:", err);
+      }
     } finally {
       setLoading(false);
     }

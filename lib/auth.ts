@@ -5,15 +5,20 @@ export function getToken(): string | null {
     return null;
   }
 
-  return localStorage.getItem(TOKEN_KEY);
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token || token === "null" || token === "undefined" || token.trim() === "") {
+    return null;
+  }
+  return token;
 }
 
 export function saveToken(token: string): void {
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || !token) {
     return;
   }
 
   localStorage.setItem(TOKEN_KEY, token);
+  document.cookie = `${TOKEN_KEY}=${encodeURIComponent(token)}; path=/; max-age=604800; SameSite=Lax`;
 }
 
 export function removeToken(): void {
@@ -22,6 +27,7 @@ export function removeToken(): void {
   }
 
   localStorage.removeItem(TOKEN_KEY);
+  document.cookie = `${TOKEN_KEY}=; path=/; max-age=0; SameSite=Lax`;
 }
 
 export function isAuthenticated(): boolean {
@@ -30,6 +36,5 @@ export function isAuthenticated(): boolean {
 
 export function logout(): void {
   removeToken();
-
   window.location.href = "/login";
 }

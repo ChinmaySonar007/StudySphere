@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   ArrowRight,
   BrainCircuit,
@@ -113,21 +114,25 @@ export default function Home() {
 
             <ScrollReveal variant="fade-up" delay={0.45} duration={0.8}>
               <div className="mt-12 flex flex-wrap justify-center gap-4">
-                <Button
-                  size="lg"
-                  className="clay-primary px-8 text-white"
-                >
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link href="/signup">
+                  <Button
+                    size="lg"
+                    className="clay-primary px-8 text-white"
+                  >
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
 
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="clay-outline px-8 text-slate-700"
-                >
-                  Live Demo
-                </Button>
+                <Link href="/login">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="clay-outline px-8 text-slate-700"
+                  >
+                    Live Demo
+                  </Button>
+                </Link>
               </div>
             </ScrollReveal>
 
@@ -313,12 +318,14 @@ export default function Home() {
                   and score better.
                 </p>
 
-                <Button
-                  size="lg"
-                  className="clay-primary mt-10 px-10 text-white"
-                >
-                  Start Learning Free
-                </Button>
+                <Link href="/signup">
+                  <Button
+                    size="lg"
+                    className="clay-primary mt-10 px-10 text-white"
+                  >
+                    Start Learning Free
+                  </Button>
+                </Link>
               </div>
             </ScrollReveal>
           </div>

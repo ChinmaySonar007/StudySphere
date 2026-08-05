@@ -4,13 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Message, { ChatMessage } from "./Message";
 import ChatInput from "./ChatInput";
 import { api } from "@/lib/api";
-import {
-  Sparkles,
-  Loader2,
-  BookOpen,
-  Layers,
-  Trash2,
-} from "lucide-react";
+import { getToken } from "@/lib/auth";
 
 interface DocumentItem {
   id: number;
@@ -48,6 +42,7 @@ export default function ChatWindow({ initialDocumentId }: ChatWindowProps) {
   // Load user documents
   useEffect(() => {
     async function loadDocs() {
+      if (!getToken()) return;
       try {
         setFetchingDocs(true);
         const data = await api.get<DocumentItem[]>("/documents/");
@@ -57,7 +52,9 @@ export default function ChatWindow({ initialDocumentId }: ChatWindowProps) {
           setSelectedDocId(readyDoc.id);
         }
       } catch (err: any) {
-        console.error("Failed to load documents:", err);
+        if (err?.message !== "Not authenticated") {
+          console.error("Failed to load documents:", err);
+        }
       } finally {
         setFetchingDocs(false);
       }

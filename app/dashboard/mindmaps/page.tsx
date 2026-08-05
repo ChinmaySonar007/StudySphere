@@ -56,6 +56,7 @@ export default function MindmapsPage() {
   // AI Modal
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [aiDocId, setAiDocId] = useState<number | null>(null);
+  const [aiTopic, setAiTopic] = useState("");
   const [generatingAi, setGeneratingAi] = useState(false);
 
   useEffect(() => {
@@ -318,20 +319,32 @@ export default function MindmapsPage() {
             <form onSubmit={handleGenerateAiMindmap} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Select Source Document *
+                  Enter Subject or Topic (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Quantum Mechanics, Photosynthesis, Machine Learning..."
+                  value={aiTopic}
+                  onChange={(e) => setAiTopic(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Select Source Document (Optional)
                 </label>
                 {documents.length === 0 ? (
-                  <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-200">
-                    No documents uploaded yet. Please upload a PDF first from Documents tab.
+                  <p className="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    No documents uploaded. You can enter a topic above or upload a document first.
                   </p>
                 ) : (
                   <select
-                    required
                     value={aiDocId || ""}
-                    onChange={(e) => setAiDocId(Number(e.target.value))}
+                    onChange={(e) => setAiDocId(e.target.value ? Number(e.target.value) : null)}
                     className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none"
                   >
-                    <option value="">Select a document...</option>
+                    <option value="">Select a document (optional)...</option>
                     {documents.map((doc) => (
                       <option key={doc.id} value={doc.id}>
                         {doc.original_filename} ({doc.status})
@@ -351,7 +364,7 @@ export default function MindmapsPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={generatingAi || !aiDocId}
+                  disabled={generatingAi || (!aiDocId && !aiTopic.trim())}
                   className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 text-xs font-bold text-white hover:from-sky-700 hover:to-indigo-700 shadow-md disabled:opacity-50"
                 >
                   {generatingAi ? (

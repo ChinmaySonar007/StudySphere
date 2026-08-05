@@ -29,5 +29,6 @@ class MindmapResponse(MindmapBase):
 
 
 class AIGenerateMindmapRequest(BaseModel):
-    document_id: int
+    document_id: int | None = None
     title: str | None = None
+    topic: str | None = None

@@ -140,7 +140,7 @@ export default function FileUploadBox({ onUploadSuccess, onProceedToRAG }: FileU
         onDrop={handleDrop}
         onClick={handleBoxClick}
         className={`
-          relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-300
+          relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 sm:p-10 text-center transition-all duration-300
           ${
             isDragging
               ? "border-indigo-600 bg-indigo-50/80 scale-[1.01] shadow-lg shadow-indigo-100"
